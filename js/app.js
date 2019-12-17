@@ -28,8 +28,22 @@ class Photo {
       this.data = data;
       this.div.id = 'photo-' + data.id;
       this.span.innerHTML = `${data.author}`;
-      this.img.src = data.download_url;
+      this.img.src = 'img/loading.gif';
       main.appendChild(this.div);
+   }
+
+   // Cargamos explícitamente la foto para saber cuándo está disponible
+   load(url) {
+      window.fetch(url)
+         .then(response => response.blob())
+         .then(imageData => {
+            this.img.src = window.URL.createObjectURL(imageData);
+            console.log(`Foto '${this.data.id}' cargada!`)
+         })
+         .catch(err => {
+            this.img.src = 'img/no-network.png';
+            console.log(`Foto '${this.data.id}' NO cargada!`)
+         });
    }
 }
 
@@ -42,6 +56,7 @@ window.fetch(photosURL)
       photos.map(photoData => {
          const photo = new Photo();
          photo.append(photoData);
+         photo.load(photoData.download_url);
       });
    })
 
@@ -50,8 +65,8 @@ window.fetch(photosURL)
    .catch(error => {
       const photo = new Photo();
       photo.append({
-         'download_url': 'img/no-network.png',
          'author': 'No hay datos por no haber conexión de red!'
       });
+      photo.load('img/no-network.png');
       console.log('No tenemos datos de fotos!');
    });
