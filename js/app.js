@@ -66,13 +66,8 @@ window.fetch(photosURL)
          );
       });
 
-      // Final de la cadena de promesas. Añadidmos al DOM un footer que nos avisa visualmente
-      return promiseChain
-         .then(() => {
-            const h3 = document.createElement('h3');
-            h3.innerHTML = `¡Cargadas todas las fotos disponibles!`;
-            main.appendChild(h3);
-         });
+      // Retornamos la promesa con la cadena. El siguiente paso se esperará a que se resuelva antes de seguir
+      return promiseChain;
    })
 
    // Si se produce algún error de ejecución cargamos un placeholder de error
@@ -84,4 +79,12 @@ window.fetch(photosURL)
       });
       photo.load('img/no-network.png');
       console.log('No tenemos datos de fotos!');
+   })
+
+   // Final de la cadena de promesas. Añadidmos al DOM un footer que nos avisa visualmente del final, vaya mal o bien
+   .finally(() => {
+      const h3 = document.createElement('h3');
+      h3.innerHTML = `¡Cargadas todas las fotos disponibles!`;
+      main.appendChild(h3);
+      console.log('Fin del proceso de carga!');
    });
