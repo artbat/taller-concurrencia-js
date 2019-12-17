@@ -54,20 +54,20 @@ window.fetch(photosURL)
 
    // Creamos los objetos Photo y los añadimos al DOM
    .then(photos => {
-      // Vamos a crear una cadena de promesas con todas las fotos, cuyo nº depende de la respuesta del servicio
-      let promiseChain = Promise.resolve();
+      // Creamos el array que contendrá todas las promesas
+      const promises = [];
 
-      // Añadimos a la cadena la promesa de descarga de cada foto, que no se cumple hasta que se descarga esta (promesas en serie)
+      // Rellenamos el array con las promesas de carga de todas las fotos
       photos.map(photoData => {
          const photo = new Photo();
          photo.append(photoData);
-         promiseChain = promiseChain.then(
-            () => photo.load(photoData.download_url)
+         promises.push(
+            photo.load(photoData.download_url),
          );
       });
 
-      // Retornamos la promesa con la cadena. El siguiente paso se esperará a que se resuelva antes de seguir
-      return promiseChain;
+      // Retornamos una promesa que se cumplirá cuando todas las fotos se hallan cargado
+      return Promise.all(promises);
    })
 
    // Si se produce algún error de ejecución cargamos un placeholder de error
