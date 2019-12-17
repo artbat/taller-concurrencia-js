@@ -1,0 +1,21 @@
+#main {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    /*grid-template-rows: 1fr 1fr 1fr 1fr;*/
+    /*grid-template-areas: ". . ." ". . ." ". . ." ". . .";*/
+}
+
+#main div {
+    margin: 1em;
+}
+
+#main img {
+    width: 100%;
+    height: auto;
+}
+
+#main span {
+    display: block;
+    color: #656565;
+    font-family: "Segoe UI", Arial, sans-serif;
+}
