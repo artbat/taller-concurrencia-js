@@ -33,18 +33,17 @@ class Photo {
    }
 
    // Cargamos explícitamente la foto para saber cuándo está disponible
-   load(url) {
-      return window.fetch(url)
-         .then(response => response.blob())
-         .then(imageData => {
-            this.img.src = window.URL.createObjectURL(imageData);
-            console.log(`Foto '${this.data.id}' cargada!`)
-         })
-         .catch(err => {
-            this.img.src = 'img/no-network.png';
-            console.log(`Foto '${this.data.id}' NO cargada!`);
-            return Promise.resolve();
-         });
+   async load(url) {
+      try {
+         const response = await window.fetch(url);
+         const imageData = await response.blob();
+
+         this.img.src = window.URL.createObjectURL(imageData);
+         console.log(`Foto '${this.data.id}' cargada!`);
+      } catch(err) {
+         this.img.src = 'img/no-network.png';
+         console.log(`Foto '${this.data.id}' NO cargada!`);
+      }
    }
 }
 
