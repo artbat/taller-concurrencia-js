@@ -34,7 +34,7 @@ class Photo {
 
    // Cargamos explícitamente la foto para saber cuándo está disponible
    load(url) {
-      window.fetch(url)
+      return window.fetch(url)
          .then(response => response.blob())
          .then(imageData => {
             this.img.src = window.URL.createObjectURL(imageData);
@@ -42,7 +42,8 @@ class Photo {
          })
          .catch(err => {
             this.img.src = 'img/no-network.png';
-            console.log(`Foto '${this.data.id}' NO cargada!`)
+            console.log(`Foto '${this.data.id}' NO cargada!`);
+            return Promise.resolve();
          });
    }
 }
@@ -53,11 +54,25 @@ window.fetch(photosURL)
 
    // Creamos los objetos Photo y los añadimos al DOM
    .then(photos => {
+      // Vamos a crear una cadena de promesas con todas las fotos, cuyo nº depende de la respuesta del servicio
+      let promiseChain = Promise.resolve();
+
+      // Añadimos a la cadena la promesa de descarga de cada foto, que no se cumple hasta que se descarga esta (promesas en serie)
       photos.map(photoData => {
          const photo = new Photo();
          photo.append(photoData);
-         photo.load(photoData.download_url);
+         promiseChain = promiseChain.then(
+            () => photo.load(photoData.download_url)
+         );
       });
+
+      // Final de la cadena de promesas. Añadidmos al DOM un footer que nos avisa visualmente
+      return promiseChain
+         .then(() => {
+            const h3 = document.createElement('h3');
+            h3.innerHTML = `¡Cargadas todas las fotos disponibles!`;
+            main.appendChild(h3);
+         });
    })
 
    // Si se produce algún error de ejecución cargamos un placeholder de error
